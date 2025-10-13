@@ -1,6 +1,6 @@
-# Project Title (Update)
+# Minimal Phone
 
-Add a description of your project here.
+A UI that makes app look less appealing. Potentially adding blocking features.
 
 
 ## Instructions for Build and Use
@@ -22,7 +22,7 @@ Instructions for using the software:
 To recreate the development environment, you need the following software and/or libraries with the specified versions:
 
 * Node.js
-*
+* Kotlin
 *
 
 ## Useful Websites to Learn More
@@ -30,13 +30,13 @@ To recreate the development environment, you need the following software and/or 
 We found these websites useful in developing this software:
 
 * [Codecademy](https://www.codecademy.com/enrolled/courses/learn-react-native)
-* [Youtube] (https://www.youtube.com/watch?v=Hp9sTsiTZ_I&list=PL0Zuz27SZ-6OH3xackTS2KLcnmxx5wW7c)
+* 
 *
 
 ## Future Work
 
 The following items we plan to fix, improve, and/or add to this project in the future:
 
-* [ ] First thing here
-* [ ]
+* [X] Prototype
+* [ ] 
 * [ ]
