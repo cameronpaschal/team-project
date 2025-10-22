@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permissions tags for the app -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -16,6 +17,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MinimalPhone">
+        <!-- New Activity that should pop up if permission aren't granted -->
         <activity
             android:name=".OnboardingActivity"
             android:exported="true"
@@ -31,6 +33,7 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.MinimalPhone">
         </activity>
+        <!-- Forground service that runs when app is in background, empty for now -->
         <service
             android:name=".ForegroundService"
             android:exported="false"

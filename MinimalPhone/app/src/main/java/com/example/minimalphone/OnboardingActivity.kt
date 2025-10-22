@@ -17,24 +17,27 @@ class OnboardingActivity : AppCompatActivity() {
     private lateinit var overlayStatus: TextView
     private lateinit var continueButton: Button
 
+//  Code that runs on the start up of the onboarding screen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_onboarding)
 
+//        Creation and linking of buttons for the permissions
         usageStatus = findViewById(R.id.usageStatus)
         overlayStatus = findViewById(R.id.overlayStatus)
         continueButton = findViewById(R.id.continueButton)
 
         val usageButton: Button = findViewById(R.id.usageSettingsButton)
         val overlayButton: Button = findViewById(R.id.overlaySettingsButton)
-        val accessibilityButton: Button = findViewById(R.id.accessibilitySettingsButton)
+//        val accessibilityButton: Button = findViewById(R.id.accessibilitySettingsButton)
 
 
         usageButton.setOnClickListener { openUsageAccessSettings() }
         overlayButton.setOnClickListener { openOverlaySettings() }
-        accessibilityButton.setOnClickListener { openAccessibilitySettings() }
+//        accessibilityButton.setOnClickListener { openAccessibilitySettings() }
 
 
+//    Checks permisisons status on creation
         updatepermissionsStatus()
     }
 
@@ -44,17 +47,20 @@ class OnboardingActivity : AppCompatActivity() {
     }
 
     private fun updatepermissionsStatus() {
+//      Variables to check if the permissions have been granted
         val usageGranted = hasUsageAccess()
         val overlayGranted = Settings.canDrawOverlays(this)
-        val accessibilityGranted = isAccessibilityServiceEnabled()
+//        val accessibilityGranted = isAccessibilityServiceEnabled()
 
-
+//      Display text based on permission status
         usageStatus.text = "Usage Access: " + if (usageGranted) "Granted" else "Not granted"
         overlayStatus.text = "Overlay Permission: " + if (overlayGranted) "Granted" else "Not granted"
-        findViewById<TextView>(R.id.accessibilityStatus).text = "Accessibility: " + if (accessibilityGranted) "Granted" else "Not granted"
+//        findViewById<TextView>(R.id.accessibilityStatus).text = "Accessibility: " + if (accessibilityGranted) "Granted" else "Not granted"
 
+//      Enable continue button only if all permissions are granted
         continueButton.isEnabled = usageGranted && overlayGranted
 
+//        If all permissions are granted, continue to main activity
         continueButton.setOnClickListener {
             if (usageGranted && overlayGranted) {
                 startActivity(Intent(this, MainActivity::class.java))
@@ -63,12 +69,14 @@ class OnboardingActivity : AppCompatActivity() {
         }
     }
 
+//    Function to open usage access settings
     private fun openUsageAccessSettings() {
         val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
     }
 
+//    Function to open overlay settings
     private fun openOverlaySettings() {
         val intent = Intent(
             Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -77,6 +85,7 @@ class OnboardingActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+//    Function to check if usage access permission is granted
     private fun hasUsageAccess(): Boolean {
         val appOps = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
         val mode = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
@@ -96,17 +105,17 @@ class OnboardingActivity : AppCompatActivity() {
         return mode == AppOpsManager.MODE_ALLOWED
     }
 
-    private fun isAccessibilityServiceEnabled(): Boolean {
-        val am = getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-        return am.isEnabled
-    }
-
-
-    private fun openAccessibilitySettings() {
-        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
-    }
+//    private fun isAccessibilityServiceEnabled(): Boolean {
+//        val am = getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+//        return am.isEnabled
+//    }
+//
+//
+//    private fun openAccessibilitySettings() {
+//        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+//        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//        startActivity(intent)
+//    }
 
 
 }
