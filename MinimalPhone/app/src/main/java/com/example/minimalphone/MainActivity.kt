@@ -4,11 +4,28 @@ package com.example.minimalphone
 
 //Import statements from the prototype
 //Import statements from template are commented at the bottom
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.minimalphone.ui.theme.MinimalPhoneTheme
+import com.example.minimalphone.ui.theme.MinimalPhoneTheme
+
+
 
 // AppCompatActivity tells the code to act like a normal Android Screen, there are other options for this
 class MainActivity : AppCompatActivity() {
@@ -31,8 +48,19 @@ class MainActivity : AppCompatActivity() {
             .map { AppInfo(it.loadLabel(pm).toString(), it.packageName) }
         // Connects the list to the adapter(displays each app's name on screen)
         recyclerView.adapter = AppsAdapter(this, installedApps)
+        val button: Button = findViewById(R.id.startServiceButton)
+        button.setOnClickListener {
+            val intent = Intent(this, ForegroundService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent)
+            } else {
+                startService(intent)
+            }
+        }
     }
 }
+
+
 
 
 // This is a debug thing to make sure the UI is actually connected and its not an emulator problem
@@ -40,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun GreetingPreview() {
     MinimalPhoneTheme {
-        Greeting("Android")
+        Text(text = "Hello Android!")
     }
 }
 
