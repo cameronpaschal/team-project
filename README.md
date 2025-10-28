@@ -29,13 +29,16 @@ We found these websites useful in developing this software:
 
 * [Kotlin](https://kotlinlang.org/)
 * [Android Studio](https://developer.android.com/studio)
+* [Android Developer](https://developer.android.com/reference/android/Manifest.permission#SYSTEM_ALERT_WINDOW)
 * [Website Title](Link)
+
 
 ## Future Work
 
 The following items we plan to fix, improve, and/or add to this project in the future:
 
 * [X] Prototype
-* [ ] Splash Screen
-* [ ] Implementing System Permissions
-* [ ] App Blocking
+* [ ] Core Foundations & Blocking Overlay
+* [ ] App Detection Pipeline
+* [ ] UI & App Management
+* [ ] App Testing & Quality
