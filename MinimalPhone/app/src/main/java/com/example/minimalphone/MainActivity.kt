@@ -38,6 +38,14 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
             startActivity(intent)
         }
+
+        // Open Debug Activity button
+        val debugButton: Button = findViewById(R.id.openDebugButton)
+        debugButton.setOnClickListener {
+            val intent = Intent(this, Usage::class.java)
+            startActivity(intent)
+        }
+
     }
 
     // Helper: Check if service is enabled
