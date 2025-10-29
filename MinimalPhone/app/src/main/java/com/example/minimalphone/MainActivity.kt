@@ -10,18 +10,11 @@ import android.view.accessibility.AccessibilityManager
 import android.widget.Toast
 import android.accessibilityservice.AccessibilityServiceInfo
 
-
-
-// MainActivity.kt
 class MainActivity : AppCompatActivity() {
 
-    // This is the starting point when the screen launches
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        // Placeholder: Future app list / RecyclerView logic goes here
-
 
         // Foreground Service
         val button: Button = findViewById(R.id.startServiceButton)
@@ -42,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         // Open Accessibility Settings button
         val enableAccessibilityButton: Button = findViewById(R.id.enableAccessibilityButton)
         enableAccessibilityButton.setOnClickListener {
-            val intent = Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
             startActivity(intent)
         }
     }

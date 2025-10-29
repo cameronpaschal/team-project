@@ -23,4 +23,11 @@
         android:text="Enable Accessibility Detection"
         android:layout_marginTop="16dp" />
 
+    <Button
+        android:id="@+id/openDebugButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Open Debug Screen"
+        android:layout_marginTop="24dp" />
+
 </LinearLayout>
