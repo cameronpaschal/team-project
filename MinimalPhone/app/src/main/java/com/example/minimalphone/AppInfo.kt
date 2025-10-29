@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.minimalphone
 
 data class AppInfo(
     val name: String,

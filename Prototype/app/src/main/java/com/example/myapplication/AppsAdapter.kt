@@ -1,4 +1,4 @@
-package com.example.Prototype
+package com.example.myapplication
 
 import android.content.Context
 import android.content.Intent
@@ -38,13 +38,13 @@ class AppsAdapter(
         // Open app button
         holder.openButton.setOnClickListener {
             if (app.isBlocked) {
-                Toast.makeText(context, "${app.name} is blocked ❌", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "${app.name} is blocked", Toast.LENGTH_SHORT).show()
             } else {
                 val launchIntent = context.packageManager.getLaunchIntentForPackage(app.packageName)
                 if (launchIntent != null) {
                     context.startActivity(launchIntent)
                 } else {
-                    Toast.makeText(context, "${app.name} not installed 😅", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "${app.name} not installed", Toast.LENGTH_SHORT).show()
                 }
             }
         }

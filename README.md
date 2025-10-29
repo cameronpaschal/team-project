@@ -1,6 +1,6 @@
-# Project Title (Update)
+# Minimal Phone
 
-Add a description of your project here.
+A UI that makes apps installed on phone look less appealing. Minimal phone will: block apps, allow user customization with timer and tags, and use different themes to meet user preference. 
 
 
 ## Instructions for Build and Use
@@ -8,8 +8,8 @@ Add a description of your project here.
 Steps to build and/or run the software:
 
 1. First step here
-2.
-3.
+2. 
+3. 
 
 Instructions for using the software:
 
@@ -20,23 +20,25 @@ Instructions for using the software:
 ## Development Environment 
 
 To recreate the development environment, you need the following software and/or libraries with the specified versions:
-
-* Node.js
-*
-*
+* Kotlin
+* Android Studio/IntelliJ
 
 ## Useful Websites to Learn More
 
 We found these websites useful in developing this software:
 
-* [Codecademy](https://www.codecademy.com/enrolled/courses/learn-react-native)
-* [Youtube] (https://www.youtube.com/watch?v=Hp9sTsiTZ_I&list=PL0Zuz27SZ-6OH3xackTS2KLcnmxx5wW7c)
-*
+* [Kotlin](https://kotlinlang.org/)
+* [Android Studio](https://developer.android.com/studio)
+* [Android Developer](https://developer.android.com/reference/android/Manifest.permission#SYSTEM_ALERT_WINDOW)
+* [Website Title](Link)
+
 
 ## Future Work
 
 The following items we plan to fix, improve, and/or add to this project in the future:
 
-* [ ] First thing here
-* [ ]
-* [ ]
+* [X] Prototype
+* [ ] Core Foundations & Blocking Overlay
+* [ ] App Detection Pipeline
+* [ ] UI & App Management
+* [ ] App Testing & Quality

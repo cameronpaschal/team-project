@@ -1,4 +1,4 @@
-package com.example.Prototype
+package com.example.myapplication
 
 import android.content.pm.PackageManager
 import android.os.Bundle
