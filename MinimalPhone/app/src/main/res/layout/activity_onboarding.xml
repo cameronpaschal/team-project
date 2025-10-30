@@ -75,18 +75,26 @@
 
         <!-- Accessibility Permission Section (placeholder for later use) -->
         <TextView
-            android:id="@+id/accessibilityStatus"
+            android:id="@+id/statusText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Accessibility Permission: Not Checked"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp" />
+            android:text="Accessibility Service Disabled"
+            android:textSize="18sp"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center_horizontal" />
+
+<!--        <Button-->
+<!--            android:id="@+id/accessibilitySettingsButton"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Open Accessibility Settings" />-->
 
         <Button
-            android:id="@+id/accessibilitySettingsButton"
+            android:id="@+id/enableAccessibilityButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Open Accessibility Settings" />
+            android:text="Open Accessibility Settings"
+            android:layout_marginTop="16dp" />
 
         <!-- Continue Button -->
         <Button
