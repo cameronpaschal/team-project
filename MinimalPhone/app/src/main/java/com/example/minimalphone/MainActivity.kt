@@ -32,13 +32,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Open Accessibility Settings button
-        val enableAccessibilityButton: Button = findViewById(R.id.enableAccessibilityButton)
-        enableAccessibilityButton.setOnClickListener {
-            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-            startActivity(intent)
-        }
-
         // Open Debug Activity button
         val debugButton: Button = findViewById(R.id.openDebugButton)
         debugButton.setOnClickListener {
