@@ -3,12 +3,12 @@ package com.example.minimalphone
 import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-
 
 class Usage : AppCompatActivity() {
     private lateinit var usageStatsManager: UsageStatsManager
@@ -31,6 +31,12 @@ class Usage : AppCompatActivity() {
             override fun run() {
                 val topPackage = getTopAppPackageName()
                 topAppText.text = "Top App: $topPackage"
+
+                // 🔥 Broadcast it so the ForegroundService can hear it
+                val intent = Intent("com.example.minimalphone.TOP_APP_UPDATE")
+                intent.putExtra("topApp", topPackage)
+                sendBroadcast(intent)
+
                 handler.postDelayed(this, 1000)
             }
         })
@@ -38,7 +44,7 @@ class Usage : AppCompatActivity() {
 
     private fun getTopAppPackageName(): String {
         val endTime = System.currentTimeMillis()
-        val beginTime = endTime - 1000 // look at the last 60 seconds
+        val beginTime = endTime - 1000
         val stats = usageStatsManager.queryUsageStats(
             UsageStatsManager.INTERVAL_DAILY,
             beginTime,
@@ -52,7 +58,6 @@ class Usage : AppCompatActivity() {
         val recent = stats.maxByOrNull { it.lastTimeUsed }
         return recent?.packageName ?: "Unknown"
     }
-
 
     override fun onDestroy() {
         super.onDestroy()
