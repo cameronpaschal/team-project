@@ -1,4 +1,4 @@
-package com.example.minimalphone
-
-class LaunchSourceDetector {
-}
+//package com.example.minimalphone
+//
+//class LaunchSourceDetector {
+//}

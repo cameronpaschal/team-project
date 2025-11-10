@@ -5,3 +5,4 @@ data class AppInfo(
     val packageName: String,
     var isBlocked: Boolean = false // Track whether app is blocked
 )
+
