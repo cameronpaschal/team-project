@@ -1,5 +1,4 @@
 <resources>
     <string name="app_name">MinimalPhone</string>
     <string name="accessibility_service_description">This service detects running apps to support MinimalPhone.</string>
-
 </resources>

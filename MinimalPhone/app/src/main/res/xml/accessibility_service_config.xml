@@ -6,6 +6,4 @@
     android:notificationTimeout="50"
     android:canRetrieveWindowContent="false"
     android:description="@string/accessibility_service_description"
-    android:packageNames=""
-    android:accessibilityFlags="flagReportViewIds"
-    android:settingsActivity="com.yourapp.YourSettingsActivity" />
+    android:settingsActivity="com.example.minimalphone.OnboardingActivity" />

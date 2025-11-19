@@ -1,16 +1,15 @@
 package com.example.minimalphone
 
-import android.app.AppOpsManager
 import android.app.NotificationManager
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
@@ -19,145 +18,150 @@ class MainActivity : AppCompatActivity() {
         private const val TAG = "MainActivity"
     }
 
+    // Avoid repeatedly prompting the user each time onResume is called
+    private var hasPromptedPermissionsThisSession = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Log.d(TAG, "MainActivity started")
+        Log.d(TAG, "MainActivity created")
 
-        // Show permissions + request missing ones
+        // 🔍 Check permissions at launch
         checkAndShowPermissions()
-        requestMissingPermissions()
     }
 
-    // --------------------------------------------------------------------
-    // ✔ Reliable Usage Stats Permission Check (real AppOps API)
-    // --------------------------------------------------------------------
+    override fun onResume() {
+        super.onResume()
+        // Re-check permissions when the user returns from system settings
+        checkAndShowPermissions()
+    }
+
+    // 🔐 Check if Usage Stats permission is granted
     private fun hasUsageStatsPermission(): Boolean {
-        val ops = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-        val mode = ops.checkOpNoThrow(
-            AppOpsManager.OPSTR_GET_USAGE_STATS,
-            android.os.Process.myUid(),
-            packageName
-        )
-        val granted = (mode == AppOpsManager.MODE_ALLOWED)
+        val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+        val time = System.currentTimeMillis()
 
-        Log.d(TAG, "Usage Stats Permission: $granted")
-        return granted
+        return try {
+            val stats = usageStatsManager.queryUsageStats(
+                UsageStatsManager.INTERVAL_DAILY,
+                time - 1000 * 60,
+                time
+            )
+            val hasPermission = !stats.isNullOrEmpty()
+            Log.d(TAG, "Usage Stats Permission: $hasPermission (found ${stats?.size} stats)")
+            hasPermission
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking Usage Stats permission", e)
+            false
+        }
     }
 
-    // --------------------------------------------------------------------
-    // ✔ Show a summary of permissions
-    // --------------------------------------------------------------------
+    // 🧾 Show a summary of permissions
     private fun checkAndShowPermissions() {
-        val hasUsage = hasUsageStatsPermission()
+        Log.d(TAG, "━━━━━ PERMISSION CHECK ━━━━━")
+
+        val hasUsageStats = hasUsageStatsPermission()
         val hasOverlay = Settings.canDrawOverlays(this)
-//        val dndGranted = isDndPermissionGranted()
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val hasDND = notificationManager.isNotificationPolicyAccessGranted
 
         val message = """
-            Permissions:
-            ${if (hasUsage) "✅" else "❌"} Usage Stats
-            ${if (hasOverlay) "✅" else "❌"} Overlay Permission
-        
+            Permissions Status:
+            ${if (hasUsageStats) "✅" else "❌"} Usage Stats
+            ${if (hasOverlay) "✅" else "❌"} Display Over Apps
+            ${if (hasDND) "✅" else "❌"} Do Not Disturb
         """.trimIndent()
 
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+
+        // 🚨 If ANY permissions are missing, prompt user to fix them via a dialog (once per session)
+        if (!hasUsageStats || !hasOverlay || !hasDND) {
+            if (!hasPromptedPermissionsThisSession) {
+                hasPromptedPermissionsThisSession = true
+                showPermissionsDialog(hasUsageStats, hasOverlay, hasDND)
+            } else {
+                Log.d(TAG, "Permissions missing but already prompted this session")
+            }
+            return
+        }
+
+        // 🎉 All permissions granted → Start FocusModeService
+        Log.d(TAG, "All permissions granted → starting FocusModeService")
+        startFocusMode()
     }
 
-    // --------------------------------------------------------------------
-    // ✔ Check missing permissions & navigate user to settings
-    // --------------------------------------------------------------------
-    private fun requestMissingPermissions() {
-        Log.d(TAG, "Checking + requesting missing permissions...")
+    private fun showPermissionsDialog(hasUsage: Boolean, hasOverlay: Boolean, hasDnd: Boolean) {
+        val missing = mutableListOf<String>()
+        if (!hasUsage) missing.add("Usage Access")
+        if (!hasOverlay) missing.add("Display over apps")
+        if (!hasDnd) missing.add("Do Not Disturb")
 
+        val builder = AlertDialog.Builder(this)
+            .setTitle("Permissions required")
+            .setMessage("The app needs the following permissions: ${missing.joinToString(", ")}.\nOpen settings to grant them?")
+            .setCancelable(true)
+            .setPositiveButton("Open Settings") { _, _ ->
+                // Open the most relevant settings screen. We don't auto-open all — user can navigate.
+                // Prefer opening Usage Access first if missing, then Overlay, then DND.
+                when {
+                    !hasUsage -> startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                    !hasOverlay -> startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, android.net.Uri.parse("package:$packageName")))
+                    !hasDnd -> startActivity(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
+                    else -> startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS))
+                }
+            }
+            .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+
+        runOnUiThread {
+            builder.show()
+        }
+    }
+
+    // 🧘 Start focus mode (foreground detection)
+    private fun startFocusMode() {
+        Log.d(TAG, "━━━━━ START FOCUS MODE ━━━━━")
+
+        // Double-check permissions before launching service
         if (!hasUsageStatsPermission()) {
-            Toast.makeText(this, "Usage Access Required!", Toast.LENGTH_LONG).show()
+            Log.e(TAG, "❌ Missing Usage Stats Permission")
             startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
             return
         }
 
         if (!Settings.canDrawOverlays(this)) {
-            Toast.makeText(this, "Overlay Permission Required!", Toast.LENGTH_LONG).show()
+            Log.e(TAG, "❌ Missing Overlay Permission")
             val intent = Intent(
                 Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:$packageName")
+                android.net.Uri.parse("package:$packageName")
             )
             startActivity(intent)
             return
         }
 
-//        if (!isDndPermissionGranted()) {
-//            Toast.makeText(this, "DND Permission Recommended", Toast.LENGTH_SHORT).show()
-//            startActivity(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
-//        }
-    }
-
-    // --------------------------------------------------------------------
-    // ✔ Check DND Permission
-    // --------------------------------------------------------------------
-//    private fun isDndPermissionGranted(): Boolean {
-//        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-//        return nm.isNotificationPolicyAccessGranted
-//    }
-
-    // --------------------------------------------------------------------
-    // ✔ Enable or Disable DND
-    // --------------------------------------------------------------------
-//    private fun setDoNotDisturb(enabled: Boolean) {
-//        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-//
-//        if (!nm.isNotificationPolicyAccessGranted) {
-//            Log.w(TAG, "Cannot change DND — permission not granted")
-//            return
-//        }
-//
-//        nm.setInterruptionFilter(
-//            if (enabled) NotificationManager.INTERRUPTION_FILTER_PRIORITY
-//            else NotificationManager.INTERRUPTION_FILTER_ALL
-//        )
-//
-//        Log.d(TAG, "DND ${if (enabled) "enabled" else "disabled"}")
-//    }
-
-    // --------------------------------------------------------------------
-    // ✔ Start Focus Mode (Foreground Service)
-    // --------------------------------------------------------------------
-    private fun startFocusMode() {
-        Log.d(TAG, "Starting Focus Mode")
-
-        if (!allPermissionsGood()) {
-            Toast.makeText(this, "Missing permissions!", Toast.LENGTH_SHORT).show()
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (!notificationManager.isNotificationPolicyAccessGranted) {
+            Log.e(TAG, "❌ Missing DND Permission")
+            startActivity(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
             return
         }
 
-//        setDoNotDisturb(true)
+        // 🔥 Start the FocusModeService (this is where detection + blocking runs)
+        val serviceIntent = Intent(this, FocusModeService::class.java)
 
-        val intent = Intent(this, ForegroundService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            startForegroundService(intent)
-        else
-            startService(intent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent)
+        } else {
+            startService(serviceIntent)
+        }
 
-        Toast.makeText(this, "Focus Mode Active!", Toast.LENGTH_LONG).show()
-    }
-
-    // --------------------------------------------------------------------
-    // ✔ Stop Focus Mode
-    // --------------------------------------------------------------------
-    private fun stopFocusMode() {
-        Log.d(TAG, "Stopping Focus Mode")
-
-//        setDoNotDisturb(false)
-        stopService(Intent(this, ForegroundService::class.java))
-
-        Toast.makeText(this, "Focus Mode Stopped", Toast.LENGTH_SHORT).show()
-    }
-
-    // --------------------------------------------------------------------
-    // ✔ Helper: Check all needed permissions at once
-    // --------------------------------------------------------------------
-    private fun allPermissionsGood(): Boolean {
-        return hasUsageStatsPermission() &&
-                Settings.canDrawOverlays(this)
+        Log.d(TAG, "✅ Focus Mode Started")
+        Toast.makeText(
+            this,
+            "🔴 FOCUS MODE ACTIVE!\nTry opening Instagram or YouTube",
+            Toast.LENGTH_LONG
+        ).show()
     }
 }

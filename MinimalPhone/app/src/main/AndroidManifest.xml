@@ -2,11 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permissions tags for the app -->
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -17,47 +18,75 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MinimalPhone">
-        <!-- New Activity that should pop up if permission aren't granted -->
+
+        <!-- Onboarding Activity (Launcher) -->
         <activity
             android:name=".OnboardingActivity"
             android:exported="true"
             android:theme="@style/Theme.MinimalPhone">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
+
+        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.MinimalPhone">
-        </activity>
-        <!-- Activity for finding the currently used app -->
+            android:theme="@style/Theme.MinimalPhone" />
+
+        <!-- Debug Screen -->
         <activity
             android:name=".Usage"
             android:exported="true"
-            android:label="Debug Screen" >
-        </activity>
-        <!-- Forground service that runs when app is in background, empty for now -->
+            android:label="Debug Screen" />
+
+        <!-- Block Screen -->
+        <activity
+            android:name=".BlockActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MinimalPhone" />
+
+        <!-- Foreground Service -->
         <service
             android:name=".ForegroundService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
-        <!-- Accessibility service that runs when app is in foreground -->
+        <!-- Focus Mode Service (MISSING BEFORE — REQUIRED!!) -->
+        <service
+            android:name=".FocusModeService"
+            android:exported="false" />
+
+        <!-- Accessibility Service (AppDetectionService) -->
         <service
             android:name=".AppDetectionService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="true">
+
             <intent-filter>
-            <action android:name="android.accessibilityservice.AccessibilityService" />
+                <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
 
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config" />
         </service>
+
+        <!-- Boot Receiver -->
+        <receiver
+            android:name=".BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+
+        </receiver>
 
     </application>
 
