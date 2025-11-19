@@ -275,21 +275,10 @@ class FocusModeService : Service() {
         }
     }
 
-    private fun hasDndPermission(): Boolean {
-        return try {
-            val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            nm.isNotificationPolicyAccessGranted
-        } catch (e: Exception) {
-            Log.w(TAG, "Error checking DND permission", e)
-            false
-        }
-    }
-
     private fun allRequiredPermissionsPresent(): Boolean {
         val usage = hasUsageStatsPermission()
         val overlay = hasOverlayPermission()
-        val dnd = hasDndPermission()
-        Log.d(TAG, "Permissions -> Usage:$usage Overlay:$overlay DND:$dnd")
+        Log.d(TAG, "Permissions -> Usage:$usage Overlay:$overlay")
         // Relax gate: start service if we have UsageStats OR Accessibility is enabled.
         // Accessibility provides fast detection and doesn't need UsageStats.
         val accessibility = try { isAccessibilityServiceEnabled() } catch (e: Exception) { false }

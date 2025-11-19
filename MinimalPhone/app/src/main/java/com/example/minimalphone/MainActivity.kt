@@ -1,6 +1,5 @@
 package com.example.minimalphone
 
-import android.app.NotificationManager
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.Intent
@@ -63,24 +62,21 @@ class MainActivity : AppCompatActivity() {
 
         val hasUsageStats = hasUsageStatsPermission()
         val hasOverlay = Settings.canDrawOverlays(this)
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val hasDND = notificationManager.isNotificationPolicyAccessGranted
+        // DND check removed - we no longer gate behavior on Do Not Disturb permission
 
         val message = """
             Permissions Status:
             ${if (hasUsageStats) "✅" else "❌"} Usage Stats
             ${if (hasOverlay) "✅" else "❌"} Display Over Apps
-            ${if (hasDND) "✅" else "❌"} Do Not Disturb
         """.trimIndent()
 
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
 
         // 🚨 If ANY permissions are missing, prompt user to fix them via a dialog (once per session)
-        if (!hasUsageStats || !hasOverlay || !hasDND) {
+        if (!hasUsageStats || !hasOverlay) {
             if (!hasPromptedPermissionsThisSession) {
                 hasPromptedPermissionsThisSession = true
-                showPermissionsDialog(hasUsageStats, hasOverlay, hasDND)
+                showPermissionsDialog(hasUsageStats, hasOverlay)
             } else {
                 Log.d(TAG, "Permissions missing but already prompted this session")
             }
@@ -92,23 +88,21 @@ class MainActivity : AppCompatActivity() {
         startFocusMode()
     }
 
-    private fun showPermissionsDialog(hasUsage: Boolean, hasOverlay: Boolean, hasDnd: Boolean) {
+    private fun showPermissionsDialog(hasUsage: Boolean, hasOverlay: Boolean) {
         val missing = mutableListOf<String>()
         if (!hasUsage) missing.add("Usage Access")
         if (!hasOverlay) missing.add("Display over apps")
-        if (!hasDnd) missing.add("Do Not Disturb")
 
         val builder = AlertDialog.Builder(this)
             .setTitle("Permissions required")
-            .setMessage("The app needs the following permissions: ${missing.joinToString(", ")}.\nOpen settings to grant them?")
+            .setMessage("The app needs the following permissions: ${missing.joinToString(", ")}\nOpen settings to grant them?")
             .setCancelable(true)
             .setPositiveButton("Open Settings") { _, _ ->
                 // Open the most relevant settings screen. We don't auto-open all — user can navigate.
-                // Prefer opening Usage Access first if missing, then Overlay, then DND.
+                // Prefer opening Usage Access first if missing, then Overlay.
                 when {
                     !hasUsage -> startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
                     !hasOverlay -> startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, android.net.Uri.parse("package:$packageName")))
-                    !hasDnd -> startActivity(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
                     else -> startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS))
                 }
             }
@@ -140,13 +134,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (!notificationManager.isNotificationPolicyAccessGranted) {
-            Log.e(TAG, "❌ Missing DND Permission")
-            startActivity(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
-            return
-        }
+        // DND is no longer required — proceed to start the service
 
         // 🔥 Start the FocusModeService (this is where detection + blocking runs)
         val serviceIntent = Intent(this, FocusModeService::class.java)

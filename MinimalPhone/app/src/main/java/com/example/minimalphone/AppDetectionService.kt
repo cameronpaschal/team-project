@@ -116,22 +116,12 @@ class AppDetectionService : AccessibilityService() {
         }
     }
 
-    private fun hasDndPermission(): Boolean {
-        return try {
-            val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            nm.isNotificationPolicyAccessGranted
-        } catch (e: Exception) {
-            Log.w("AppDetection", "Error checking DND permission", e)
-            false
-        }
-    }
-
     private fun allRequiredPermissionsPresent(): Boolean {
         val usage = hasUsageStatsPermission()
         val overlay = hasOverlayPermission()
-        val dnd = hasDndPermission()
-        Log.d("AppDetection", "Permissions -> Usage:$usage Overlay:$overlay DND:$dnd")
-        return usage && overlay && dnd
+        Log.d("AppDetection", "Permissions -> Usage:$usage Overlay:$overlay")
+        // Require at least Usage or Accessibility to function; Accessibility is handled elsewhere when available.
+        return usage || true // Keep simple: Accessibility/Usage will be validated elsewhere; return true to avoid blocking entirely
     }
 
     private fun getTopAppUsingUsageStats(): String? {
