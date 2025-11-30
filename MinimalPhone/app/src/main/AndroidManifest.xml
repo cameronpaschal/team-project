@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -44,6 +45,10 @@
             android:exported="true"
             android:label="Debug Screen" />
 
+        <activity android:name=".FocusModeActivity"/>
+        <activity android:name=".BlockedAppsActivity"/>
+
+
         <!-- Block Screen -->
         <activity
             android:name=".BlockActivity"
@@ -54,12 +59,13 @@
         <service
             android:name=".ForegroundService"
             android:exported="false"
-            android:foregroundServiceType="dataSync" />
+            android:foregroundServiceType="dataSync|specialUse" />
 
         <!-- Focus Mode Service (MISSING BEFORE — REQUIRED!!) -->
         <service
             android:name=".FocusModeService"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="dataSync|specialUse" />
 
         <!-- Accessibility Service (AppDetectionService) -->
         <service
@@ -89,5 +95,12 @@
         </receiver>
 
     </application>
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
 
 </manifest>

@@ -20,11 +20,9 @@ class BlockActivity : AppCompatActivity() {
 
         val blockedPackage = intent.getStringExtra("blocked_package") ?: "Unknown App"
 // kotlin
-        val appName = BlockedAppsManager.getAppDisplayName(blockedPackage)
-
-
+        val appName = BlockedAppsManager.getAppDisplayName(this, blockedPackage)
         val appNameView = findViewById<TextView>(R.id.app_name_blocked)
-        appNameView.text = "$appName is Blocked"
+        appNameView.text = getString(R.string.blocked_app_message, appName)
 
         val goHomeButton = findViewById<Button>(R.id.go_home_button)
         goHomeButton.setOnClickListener {

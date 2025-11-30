@@ -1,15 +1,12 @@
 package com.example.minimalphone
+
 import android.accessibilityservice.AccessibilityService
 import android.view.accessibility.AccessibilityEvent
 import android.util.Log
 import android.content.Intent
-import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
 import android.content.Context
-import android.app.NotificationManager
-import android.os.Build
-import android.provider.Settings
-import java.util.SortedMap
+import android.app.usage.UsageStats
 import java.util.TreeMap
 
 /**
@@ -38,8 +35,8 @@ class AppDetectionService : AccessibilityService() {
                 }
                 sendBroadcast(intent)
 
-                // If the app is blocked, try to show the BlockActivity directly as a fallback
-                if (packageName != this.packageName && BlockedAppsManager.isBlocked(packageName)) {
+                // Fix: Pass context to isBlocked
+                if (packageName != this.packageName && BlockedAppsManager.isBlocked(this, packageName)) {
                     val now = System.currentTimeMillis()
                     if (packageName != lastBlockedPackage || now - lastBlockTime > BLOCK_COOLDOWN) {
                         lastBlockedPackage = packageName
@@ -62,14 +59,12 @@ class AppDetectionService : AccessibilityService() {
                     // AccessibilityService is active — start FocusModeService so detection can run.
                     // FocusModeService will enforce any further gating as needed.
                     Log.d("AppDetection", "Accessibility event received — ensuring FocusModeService is running")
-                    val svcIntent = Intent(this, FocusModeService::class.java).apply {
-                        action = "com.example.minimalphone.action.START_MONITOR"
-                        putExtra("initial_top_app", packageName)
-                    }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    if (FocusModeStateManager.isFocusModeOn(this)) {
+                        val svcIntent = Intent(this, FocusModeService::class.java).apply {
+                            action = "com.example.minimalphone.action.START_MONITOR"
+                            putExtra("initial_top_app", packageName)
+                        }
                         startForegroundService(svcIntent)
-                    } else {
-                        startService(svcIntent)
                     }
                 } catch (e: Exception) {
                     Log.w("AppDetection", "Failed to start FocusModeService", e)
@@ -92,36 +87,6 @@ class AppDetectionService : AccessibilityService() {
         } else {
             Log.d("AppDetection", "Unable to detect top app")
         }
-    }
-
-    // Permission helpers (similar to FocusModeService) so Accessibility can ensure the monitor is running
-    private fun hasUsageStatsPermission(): Boolean {
-        val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-        return try {
-            val time = System.currentTimeMillis()
-            val stats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 60, time)
-            !stats.isNullOrEmpty()
-        } catch (e: Exception) {
-            Log.w("AppDetection", "Error checking usage stats permission", e)
-            false
-        }
-    }
-
-    private fun hasOverlayPermission(): Boolean {
-        return try {
-            Settings.canDrawOverlays(this)
-        } catch (e: Exception) {
-            Log.w("AppDetection", "Error checking overlay permission", e)
-            false
-        }
-    }
-
-    private fun allRequiredPermissionsPresent(): Boolean {
-        val usage = hasUsageStatsPermission()
-        val overlay = hasOverlayPermission()
-        Log.d("AppDetection", "Permissions -> Usage:$usage Overlay:$overlay")
-        // Require at least Usage or Accessibility to function; Accessibility is handled elsewhere when available.
-        return usage || true // Keep simple: Accessibility/Usage will be validated elsewhere; return true to avoid blocking entirely
     }
 
     private fun getTopAppUsingUsageStats(): String? {

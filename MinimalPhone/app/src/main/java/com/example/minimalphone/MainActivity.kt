@@ -7,9 +7,9 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     // 🔐 Check if Usage Stats permission is granted
     private fun hasUsageStatsPermission(): Boolean {
-        val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+        val usageStatsManager = getSystemService(USAGE_STATS_SERVICE) as UsageStatsManager
         val time = System.currentTimeMillis()
 
         return try {
@@ -64,14 +64,6 @@ class MainActivity : AppCompatActivity() {
         val hasOverlay = Settings.canDrawOverlays(this)
         // DND check removed - we no longer gate behavior on Do Not Disturb permission
 
-        val message = """
-            Permissions Status:
-            ${if (hasUsageStats) "✅" else "❌"} Usage Stats
-            ${if (hasOverlay) "✅" else "❌"} Display Over Apps
-        """.trimIndent()
-
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-
         // 🚨 If ANY permissions are missing, prompt user to fix them via a dialog (once per session)
         if (!hasUsageStats || !hasOverlay) {
             if (!hasPromptedPermissionsThisSession) {
@@ -83,9 +75,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // 🎉 All permissions granted → Start FocusModeService
-        Log.d(TAG, "All permissions granted → starting FocusModeService")
-        startFocusMode()
+        // Permissions granted, do nothing. FocusModeService is started from FocusModeActivity only.
     }
 
     private fun showPermissionsDialog(hasUsage: Boolean, hasOverlay: Boolean) {
@@ -102,7 +92,7 @@ class MainActivity : AppCompatActivity() {
                 // Prefer opening Usage Access first if missing, then Overlay.
                 when {
                     !hasUsage -> startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
-                    !hasOverlay -> startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, android.net.Uri.parse("package:$packageName")))
+                    !hasOverlay -> startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, "package:$packageName".toUri()))
                     else -> startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS))
                 }
             }
@@ -111,45 +101,5 @@ class MainActivity : AppCompatActivity() {
         runOnUiThread {
             builder.show()
         }
-    }
-
-    // 🧘 Start focus mode (foreground detection)
-    private fun startFocusMode() {
-        Log.d(TAG, "━━━━━ START FOCUS MODE ━━━━━")
-
-        // Double-check permissions before launching service
-        if (!hasUsageStatsPermission()) {
-            Log.e(TAG, "❌ Missing Usage Stats Permission")
-            startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
-            return
-        }
-
-        if (!Settings.canDrawOverlays(this)) {
-            Log.e(TAG, "❌ Missing Overlay Permission")
-            val intent = Intent(
-                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                android.net.Uri.parse("package:$packageName")
-            )
-            startActivity(intent)
-            return
-        }
-
-        // DND is no longer required — proceed to start the service
-
-        // 🔥 Start the FocusModeService (this is where detection + blocking runs)
-        val serviceIntent = Intent(this, FocusModeService::class.java)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent)
-        } else {
-            startService(serviceIntent)
-        }
-
-        Log.d(TAG, "✅ Focus Mode Started")
-        Toast.makeText(
-            this,
-            "🔴 FOCUS MODE ACTIVE!\nTry opening Instagram or YouTube",
-            Toast.LENGTH_LONG
-        ).show()
     }
 }

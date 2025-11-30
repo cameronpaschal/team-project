@@ -17,7 +17,7 @@
             android:id="@+id/titleText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="App Setup"
+            android:text="@string/app_setup"
             android:textSize="26sp"
             android:textStyle="bold"
             android:layout_marginBottom="8dp" />
@@ -27,7 +27,7 @@
             android:id="@+id/subtitleText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Please enable the permissions below to continue."
+            android:text="@string/enable_permissions"
             android:textSize="16sp"
             android:layout_marginBottom="24dp" />
 
@@ -36,7 +36,7 @@
             android:id="@+id/usageStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Usage Access: Not Granted"
+            android:text="@string/usage_access_not_granted"
             android:textSize="16sp"
             android:layout_marginBottom="8dp" />
 
@@ -44,7 +44,7 @@
             android:id="@+id/usageSettingsButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Open Usage Access Settings" />
+            android:text="@string/open_usage_access_settings" />
 
         <View
             android:layout_width="match_parent"
@@ -57,7 +57,7 @@
             android:id="@+id/overlayStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Overlay Permission: Not Granted"
+            android:text="@string/overlay_permission_not_granted"
             android:textSize="16sp"
             android:layout_marginBottom="8dp" />
 
@@ -65,7 +65,7 @@
             android:id="@+id/overlaySettingsButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Open Overlay Settings" />
+            android:text="@string/open_overlay_settings" />
 
         <View
             android:layout_width="match_parent"
@@ -78,22 +78,16 @@
             android:id="@+id/statusText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Accessibility Service Disabled"
+            android:text="@string/accessibility_service_disabled"
             android:textSize="18sp"
             android:layout_marginTop="16dp"
             android:layout_gravity="center_horizontal" />
-
-<!--        <Button-->
-<!--            android:id="@+id/accessibilitySettingsButton"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="Open Accessibility Settings" />-->
 
         <Button
             android:id="@+id/enableAccessibilityButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Open Accessibility Settings"
+            android:text="@string/open_accessibility_settings"
             android:layout_marginTop="16dp" />
 
         <!-- Continue Button -->
@@ -101,7 +95,7 @@
             android:id="@+id/continueButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Continue"
+            android:text="@string/continue_button"
             android:layout_marginTop="32dp"
             android:enabled="false" />
 

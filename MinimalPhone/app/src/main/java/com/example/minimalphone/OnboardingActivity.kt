@@ -64,7 +64,7 @@ class OnboardingActivity : AppCompatActivity() {
 //        If all permissions are granted, continue to main activity
         continueButton.setOnClickListener {
             if (usageGranted && overlayGranted && accessibilityGranted) {
-                startActivity(Intent(this, MainActivity::class.java))
+                startActivity(Intent(this, FocusModeActivity::class.java))
                 finish()
             }
         }
