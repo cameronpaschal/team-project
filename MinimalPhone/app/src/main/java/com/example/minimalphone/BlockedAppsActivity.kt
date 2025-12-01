@@ -20,7 +20,10 @@ class BlockedAppsActivity : AppCompatActivity() {
         val intent = Intent(Intent.ACTION_MAIN, null)
         intent.addCategory(Intent.CATEGORY_LAUNCHER)
         val resolvedApps = packageManager.queryIntentActivities(intent, 0)
-        val installedApps = resolvedApps.map { it.activityInfo.applicationInfo }
+
+        val installedApps = resolvedApps
+            .map { it.activityInfo.applicationInfo }
+            .filter { it.packageName != packageName }
 
         val blocked = BlockedAppsManager.getBlockedApps(this)
 
