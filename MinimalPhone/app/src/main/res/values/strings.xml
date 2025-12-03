@@ -16,4 +16,7 @@
     <string name="open_accessibility_settings">Open Accessibility Settings</string>
     <string name="continue_button">Continue</string>
     <string name="blocked_app_message">%1$s is Blocked</string>
+    <string name="focus_toggle_on">ON</string>
+    <string name="focus_toggle_off">OFF</string>
+
 </resources>

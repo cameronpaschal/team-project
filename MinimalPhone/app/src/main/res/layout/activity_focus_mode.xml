@@ -17,37 +17,26 @@
         android:textColor="#222"
         android:layout_marginBottom="24dp"/>
 
-    <TextView
-        android:id="@+id/statusText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Focus Mode: OFF"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#FF5252"
-        android:layout_marginBottom="32dp"/>
+<!--    <TextView-->
+<!--        android:id="@+id/statusText"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text=""-->
+<!--        android:textSize="20sp"-->
+<!--        android:textStyle="bold"-->
+<!--        android:textColor="#FF5252"-->
+<!--        android:layout_marginBottom="32dp"/>-->
 
-    <Button
-        android:id="@+id/startButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Turn Focus Mode ON"
-        android:textSize="18sp"
-        android:backgroundTint="#4CAF50"
-        android:textColor="@android:color/white"
-        android:layout_marginBottom="16dp"
-        android:padding="12dp"/>
+    <ToggleButton
+        android:id="@+id/circleToggle"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
+        android:background="@drawable/toggle_circle_selector"
+        android:button="@null"
+        android:textOn="@string/focus_toggle_on"
+        android:textOff="@string/focus_toggle_off" />
 
-    <Button
-        android:id="@+id/stopButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Turn Focus Mode OFF"
-        android:textSize="18sp"
-        android:backgroundTint="#FF5252"
-        android:textColor="@android:color/white"
-        android:layout_marginBottom="32dp"
-        android:padding="12dp"/>
 
     <Button
         android:id="@+id/blockedAppsButton"
