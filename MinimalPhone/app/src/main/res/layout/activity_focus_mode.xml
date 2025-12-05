@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="32dp"
-    android:gravity="center_horizontal"
+    android:gravity="center"
     android:background="@android:color/white">
 
     <TextView
@@ -29,13 +29,16 @@
 
     <ToggleButton
         android:id="@+id/circleToggle"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         android:layout_gravity="center"
         android:background="@drawable/toggle_circle_selector"
         android:button="@null"
         android:textOn="@string/focus_toggle_on"
-        android:textOff="@string/focus_toggle_off" />
+        android:textOff="@string/focus_toggle_off"
+        android:textSize="45sp"
+        android:textStyle="bold"
+        android:gravity="center"/>
 
 
     <Button
@@ -44,8 +47,9 @@
         android:layout_height="wrap_content"
         android:text="Manage Blocked Apps"
         android:textSize="18sp"
-        android:backgroundTint="#2196F3"
+        android:backgroundTint="@android:color/background_dark"
         android:textColor="@android:color/white"
-        android:padding="12dp"/>
+        android:padding="12dp"
+        android:layout_margin="32dp"/>
 
 </LinearLayout>
