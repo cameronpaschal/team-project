@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:text="Back to Focus Mode"
         android:textSize="18sp"
-        android:backgroundTint="@color/dark_grey"
+        android:backgroundTint="@color/dark_gray"
         android:textColor="@android:color/white"
         android:layout_marginTop="20dp"
         android:padding="12dp"/>
